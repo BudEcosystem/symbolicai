@@ -1,0 +1,4 @@
+cucumber-expressions>=17.0.0
+numpy>=1.24.0
+sympy>=1.12
+model2vec>=0.2.0
