@@ -51,6 +51,7 @@ class SemanticParameterType(ParameterType):
         self.context_hints = context_hints or {}
         self.model_manager = Model2VecManager()
         self._prototype_embeddings = None
+        self._precompute_embeddings = True  # Enable pre-computation by default
         
     def _ensure_embeddings(self):
         """Ensure prototype embeddings are computed"""

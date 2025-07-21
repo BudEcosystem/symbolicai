@@ -10,6 +10,7 @@ from .expression import budExpression
 from .unified_expression_parser_simple import SimpleUnifiedExpressionParser
 from .unified_parameter_type import UnifiedParameterType, ParameterTypeHint
 from .parameter_type import ParameterType
+from .multi_level_cache import get_global_cache
 
 
 class UnifiedBudExpression(budExpression):
@@ -38,6 +39,7 @@ class UnifiedBudExpression(budExpression):
         self.original_expression = expression
         self.parameter_type_registry = parameter_type_registry
         self.parser = SimpleUnifiedExpressionParser()
+        self._cache = get_global_cache()  # Use multi-level cache
         
         # Parse the expression to extract type hints
         self.parameter_metadata = self.parser.parse(expression)
@@ -216,6 +218,21 @@ class UnifiedBudExpression(budExpression):
             return Argument(new_group, param_type)
         
         return argument
+    
+    def match(self, text: str) -> Optional[List[Argument]]:
+        """Override match to add caching support"""
+        # Check L1 cache first
+        cached_result = self._cache.get_expression_result(self.original_expression, text)
+        if cached_result is not None:
+            return cached_result if cached_result != "NO_MATCH" else None
+        
+        # Call parent match method
+        result = super().match(text)
+        
+        # Cache the result (use "NO_MATCH" for None to distinguish from cache miss)
+        self._cache.put_expression_result(self.original_expression, text, result if result is not None else "NO_MATCH")
+        
+        return result
     
     def get_parameter_metadata(self, param_name: str) -> Optional[Dict[str, Any]]:
         """Get metadata for a specific parameter"""

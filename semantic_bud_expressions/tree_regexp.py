@@ -3,11 +3,12 @@ from typing import List, Pattern
 
 from .ast import EscapeCharacters
 from .group_builder import GroupBuilder
+from .regex_cache import regex_cache
 
 
 class TreeRegexp:
     def __init__(self, regexp: str):
-        self.regexp = regexp if isinstance(regexp, Pattern) else re.compile(regexp)
+        self.regexp = regexp if isinstance(regexp, Pattern) else regex_cache.compile(regexp)
         self._group_builder = None
         if not self._group_builder:
             self._group_builder = self.create_group_builder(self.regexp)

@@ -5,6 +5,8 @@ from .semantic_parameter_type import SemanticParameterType
 from .math_parameter_type import MathParameterType
 from .argument import Argument
 from .model_manager import Model2VecManager
+from .regex_cache import regex_cache
+from .multi_level_cache import get_global_cache
 import re
 
 class SemanticBudExpression(budExpression):
@@ -14,13 +16,14 @@ class SemanticBudExpression(budExpression):
         super().__init__(expression, parameter_type_registry)
         self.model_manager = Model2VecManager()
         self._semantic_patterns = self._extract_semantic_patterns()
+        self._cache = get_global_cache()  # Use multi-level cache
         
     def _extract_semantic_patterns(self) -> List[Dict[str, Any]]:
         """Extract semantic pattern markers from expression"""
         patterns = []
         
         # Look for {{category}} or {{category:type}} patterns
-        semantic_pattern = re.compile(r'\{\{(\w+)(?::(\w+))?\}\}')
+        semantic_pattern = regex_cache.compile(r'\{\{(\w+)(?::(\w+))?\}\}')
         
         for match in semantic_pattern.finditer(self.expression):
             patterns.append({
@@ -35,15 +38,24 @@ class SemanticBudExpression(budExpression):
     
     def match(self, text: str) -> Optional[List[Argument]]:
         """Enhanced match with semantic support"""
+        # Check L1 cache first
+        cached_result = self._cache.get_expression_result(self.expression, text)
+        if cached_result is not None:
+            return cached_result
+        
         # First try standard matching
         standard_match = super().match(text)
         if standard_match:
+            self._cache.put_expression_result(self.expression, text, standard_match)
             return standard_match
             
         # If no standard match and we have semantic patterns, try semantic matching
         if self._semantic_patterns:
-            return self._semantic_match(text)
+            result = self._semantic_match(text)
+            self._cache.put_expression_result(self.expression, text, result)
+            return result
             
+        self._cache.put_expression_result(self.expression, text, None)
         return None
     
     def _semantic_match(self, text: str) -> Optional[List[Argument]]:
@@ -58,7 +70,7 @@ class SemanticBudExpression(budExpression):
             capture_groups.insert(0, sp)  # Insert at beginning due to reverse
             
         # Try to match the pattern
-        regex = re.compile(f'^{pattern}$')
+        regex = regex_cache.compile(f'^{pattern}$')
         match = regex.match(text)
         
         if not match:

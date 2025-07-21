@@ -5,6 +5,7 @@ from re import Pattern
 from typing import Union
 
 from .parameter_type import ParameterType
+from .regex_cache import regex_cache
 
 
 class ParameterTypeMatcher:
@@ -17,7 +18,7 @@ class ParameterTypeMatcher:
     ):
         self.parameter_type = parameter_type
         self.regexp: Pattern = (
-            regexp if isinstance(regexp, Pattern) else re.compile(regexp)
+            regexp if isinstance(regexp, Pattern) else regex_cache.compile(regexp)
         )
         self.text = text
         self.match_position = match_position

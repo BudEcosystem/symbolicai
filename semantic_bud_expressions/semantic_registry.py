@@ -79,6 +79,8 @@ class SemanticParameterTypeRegistry(ParameterTypeRegistry):
     def initialize_model(self, model_name: str = 'minishlab/potion-base-8M'):
         """Initialize the model2vec model"""
         self.model_manager.initialize_sync(model_name)
+        # Pre-compute embeddings for all semantic types
+        self._precompute_all_embeddings()
         
     def enable_dynamic_matching(self, enabled: bool = True):
         """Enable or disable dynamic semantic matching"""
@@ -123,3 +125,24 @@ class SemanticParameterTypeRegistry(ParameterTypeRegistry):
             return dynamic_type
             
         return None
+    
+    def _precompute_all_embeddings(self):
+        """Pre-compute embeddings for all semantic parameter types"""
+        all_prototypes = []
+        param_type_indices = []
+        
+        # Collect all prototypes from semantic types
+        for param_type in self.parameter_types:
+            if isinstance(param_type, SemanticParameterType) and hasattr(param_type, 'prototypes'):
+                start_idx = len(all_prototypes)
+                all_prototypes.extend(param_type.prototypes)
+                end_idx = len(all_prototypes)
+                param_type_indices.append((param_type, start_idx, end_idx))
+        
+        if all_prototypes:
+            # Batch compute all embeddings at once
+            all_embeddings = self.model_manager.embed_sync(all_prototypes)
+            
+            # Assign embeddings back to each parameter type
+            for param_type, start_idx, end_idx in param_type_indices:
+                param_type._prototype_embeddings = all_embeddings[start_idx:end_idx]

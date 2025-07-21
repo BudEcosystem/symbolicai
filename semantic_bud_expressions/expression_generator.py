@@ -5,6 +5,7 @@ from typing import List
 from .generated_expression import budGeneratedExpression
 from .parameter_type import ParameterType
 from .parameter_type_matcher import ParameterTypeMatcher
+from .regex_cache import regex_cache
 from .combinatorial_generated_expression_factory import (
     budCombinatorialGeneratedExpressionFactory,
 )
@@ -94,6 +95,6 @@ class budExpressionGenerator:
         parameter_type, text
     ) -> List[ParameterTypeMatcher]:
         return [
-            ParameterTypeMatcher(parameter_type, re.compile(f"({regexp})"), text, 0)
+            ParameterTypeMatcher(parameter_type, regex_cache.compile(f"({regexp})"), text, 0)
             for regexp in parameter_type.regexps
         ]

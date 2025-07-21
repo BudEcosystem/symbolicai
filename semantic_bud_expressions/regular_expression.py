@@ -5,6 +5,7 @@ from .argument import Argument
 from .parameter_type import ParameterType
 from .parameter_type_registry import ParameterTypeRegistry
 from .tree_regexp import TreeRegexp
+from .regex_cache import regex_cache
 
 
 class budRegularExpression:
@@ -23,7 +24,7 @@ class budRegularExpression:
         :param parameter_type_registry: used to look up parameter types
         :type parameter_type_registry: ParameterTypeRegistry
         """
-        self.expression_regexp = re.compile(expression_regexp)
+        self.expression_regexp = regex_cache.compile(expression_regexp) if isinstance(expression_regexp, str) else expression_regexp
         self.parameter_type_registry = parameter_type_registry
         self.tree_regexp: TreeRegexp = TreeRegexp(self.expression_regexp.pattern)
 

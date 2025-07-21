@@ -2,6 +2,7 @@ from typing import List, Dict, Optional
 import numpy as np
 import threading
 from .semantic_cache import SemanticCache
+from .multi_level_cache import get_global_cache
 
 class Model2VecManager:
     """Manages model2vec instance and provides embedding functions"""
@@ -23,6 +24,8 @@ class Model2VecManager:
             
         self.model = None
         self.cache = SemanticCache()
+        self.multi_cache = get_global_cache()  # Use multi-level cache
+        self._use_multi_cache = True  # Flag to enable/disable multi-level caching
         self._initialized = True
         
     async def initialize(self, model_name: str = 'minishlab/potion-base-8M'):
@@ -70,8 +73,12 @@ class Model2VecManager:
         if self.model is None:
             raise RuntimeError("Model not initialized. Call initialize() first.")
             
-        # Check cache
-        uncached_texts, cached_embeddings = self.cache.get_batch(texts)
+        # Use multi-level cache if enabled
+        if self._use_multi_cache:
+            uncached_texts, cached_embeddings = self.multi_cache.get_batch_embeddings(texts)
+        else:
+            # Fall back to simple cache
+            uncached_texts, cached_embeddings = self.cache.get_batch(texts)
         
         # Get embeddings for uncached texts
         if uncached_texts:
@@ -79,7 +86,11 @@ class Model2VecManager:
             
             # Cache new embeddings
             embedding_dict = {text: emb for text, emb in zip(uncached_texts, new_embeddings)}
-            self.cache.put_batch(embedding_dict)
+            
+            if self._use_multi_cache:
+                self.multi_cache.put_batch_embeddings(embedding_dict)
+            else:
+                self.cache.put_batch(embedding_dict)
             
             # Combine with cached
             cached_embeddings.update(embedding_dict)
