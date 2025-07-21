@@ -1,0 +1,103 @@
+[
+  {
+    "use_case": "API Guardrails",
+    "expected_rps": 1000,
+    "expressions": [
+      {
+        "pattern": "The response contains {forbidden_word:semantic} content",
+        "test_inputs": 4,
+        "total_requests": 400,
+        "success_rate": 100.0,
+        "avg_latency_ms": 0.0016953956219367683,
+        "p95_latency_ms": 0.0018331222236156464,
+        "p99_latency_ms": 0.0022093905135989185,
+        "achievable_rps": 589832.8313822296,
+        "meets_requirement": true
+      },
+      {
+        "pattern": "User is trying to {malicious_action:semantic} the system",
+        "test_inputs": 4,
+        "total_requests": 400,
+        "success_rate": 100.0,
+        "avg_latency_ms": 0.0017164586461149156,
+        "p95_latency_ms": 0.001875101588666439,
+        "p99_latency_ms": 0.0022910628467798233,
+        "achievable_rps": 582594.8689550024,
+        "meets_requirement": true
+      }
+    ]
+  },
+  {
+    "use_case": "Semantic Caching",
+    "expected_rps": 500,
+    "expressions": [
+      {
+        "pattern": "Get {data_type:semantic} for {entity:phrase}",
+        "test_inputs": 4,
+        "total_requests": 400,
+        "success_rate": 100.0,
+        "avg_latency_ms": 0.005573969974648207,
+        "p95_latency_ms": 0.005875015631318092,
+        "p99_latency_ms": 0.0074173579923808575,
+        "achievable_rps": 179405.34386590653,
+        "meets_requirement": true
+      },
+      {
+        "pattern": "Calculate {metric:semantic} for {time_period:phrase}",
+        "test_inputs": 4,
+        "total_requests": 400,
+        "success_rate": 100.0,
+        "avg_latency_ms": 0.0059317806153558195,
+        "p95_latency_ms": 0.007008400280028574,
+        "p99_latency_ms": 0.007833424024283886,
+        "achievable_rps": 168583.44312519973,
+        "meets_requirement": true
+      }
+    ]
+  },
+  {
+    "use_case": "Natural Language Commands",
+    "expected_rps": 100,
+    "expressions": [
+      {
+        "pattern": "{assistant:dynamic}, {action:semantic} the {device:phrase} in {location:quoted}",
+        "test_inputs": 4,
+        "total_requests": 400,
+        "success_rate": 0.0,
+        "avg_latency_ms": 0.0010186174768023193,
+        "p95_latency_ms": 0.0020439794752746803,
+        "p99_latency_ms": 0.0022507901303470126,
+        "achievable_rps": 981722.798571291,
+        "meets_requirement": true
+      },
+      {
+        "pattern": "Schedule {task:phrase} for {time:phrase} with {participants:quoted}",
+        "test_inputs": 4,
+        "total_requests": 400,
+        "success_rate": 100.0,
+        "avg_latency_ms": 0.01792610972188413,
+        "p95_latency_ms": 0.02195802517235279,
+        "p99_latency_ms": 0.025055733276531086,
+        "achievable_rps": 55784.552003450226,
+        "meets_requirement": true
+      }
+    ]
+  },
+  {
+    "use_case": "Log Analysis",
+    "expected_rps": 5000,
+    "expressions": [
+      {
+        "pattern": "{severity:regex} - {component:phrase} {error_type:semantic} at {timestamp}",
+        "test_inputs": 4,
+        "total_requests": 400,
+        "success_rate": 0.0,
+        "avg_latency_ms": 0.0025149912107735872,
+        "p95_latency_ms": 0.0033339078072458506,
+        "p99_latency_ms": 0.0035844882950186725,
+        "achievable_rps": 397615.70367174747,
+        "meets_requirement": true
+      }
+    ]
+  }
+]

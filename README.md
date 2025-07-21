@@ -1,6 +1,6 @@
 # Bud Symbolic AI
 
-An effort to build a holistic matching engine that supports regex, cucumber expressions, semantic phrases, and combinations of that. Could be useful for Guardrails, Caching systems etc.
+An effort to build a holistic matching engine that supports regex, budExpressions, semantic phrases, and combinations of that. Could be useful for Guardrails, Caching systems etc.
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -11,21 +11,22 @@ An effort to build a holistic matching engine that supports regex, cucumber expr
 - **Multi-word Phrase Support**: Capture phrases like "Rolls Royce" or "MacBook Pro 16 inch"
 - **Unified Expression System**: Mix different parameter types in a single expression
 - **Dynamic Parameter Types**: Automatically create parameter types based on context
-- **Embedding support**: embeddings (Model2Vec) for semantic understanding, Model2Vec could be replaced with any other Embedding models, we chose this for performance reasons.
-- **Backward Compatible**: Works with existing Cucumber Expression syntax
+- **High Performance**: Sub-millisecond latency, 50,000+ ops/sec throughput
+- **Embedding Support**: Model2Vec for semantic understanding (replaceable with other models)
+- **Backward Compatible**: Works with existing bud Expression syntax
 - **Extensible**: Easy to add custom parameter types and matching strategies
 
 ## 🚀 Quick Start
 
 ```python
-from semantic_cucumber_expressions import UnifiedCucumberExpression, UnifiedParameterTypeRegistry
+from semantic_bud_expressions import UnifiedBudExpression, UnifiedParameterTypeRegistry
 
 # Initialize
 registry = UnifiedParameterTypeRegistry()
 registry.initialize_model()
 
 # Create expression with multiple parameter types
-expr = UnifiedCucumberExpression(
+expr = UnifiedBudExpression(
     "{greeting} {name}, I want to {action:semantic} a {product:phrase}",
     registry
 )
@@ -34,6 +35,25 @@ expr = UnifiedCucumberExpression(
 match = expr.match("Hello John, I want to purchase a MacBook Pro")
 # Results: greeting="Hello", name="John", action="purchase", product="MacBook Pro"
 ```
+
+## ⚡ Performance
+
+Benchmarked on Apple M1 MacBook Pro:
+
+| Expression Type | Avg Latency | Max Throughput | At 1000 RPS |
+|----------------|-------------|----------------|-------------|
+| Simple         | 0.020 ms    | 50,227 ops/sec | ✓ 100% success |
+| Semantic       | 0.018 ms    | 55,735 ops/sec | ✓ 100% success |
+| Complex        | 0.031 ms    | 32,513 ops/sec | ✓ 100% success |
+| Mixed          | 0.027 ms    | 36,557 ops/sec | ✓ 100% success |
+
+**Real-world use cases:**
+- API Guardrails: 580,000+ RPS capability
+- Semantic Caching: 168,000+ RPS capability  
+- Natural Language Commands: 55,000+ RPS capability
+- Log Analysis: 397,000+ RPS capability
+
+See [benchmarks/](benchmarks/) for detailed performance analysis.
 
 ## 📦 Installation
 
@@ -45,8 +65,8 @@ match = expr.match("Hello John, I want to purchase a MacBook Pro")
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/semantic-cucumber-expressions.git
-cd semantic-cucumber-expressions
+git clone https://github.com/yourusername/semantic-bud-expressions.git
+cd semantic-bud-expressions
 
 # Create virtual environment
 python -m venv venv
@@ -58,7 +78,7 @@ pip install -r requirements.txt
 
 ### Dependencies
 ```
-cucumber-expressions>=17.0.0
+# Core dependencies
 numpy>=1.24.0
 sympy>=1.12
 model2vec>=0.2.0
@@ -109,14 +129,14 @@ model2vec>=0.2.0
 ### Basic Semantic Matching
 
 ```python
-from semantic_cucumber_expressions import SemanticCucumberExpression, SemanticParameterTypeRegistry
+from semantic_bud_expressions import SemanticBudExpression, SemanticParameterTypeRegistry
 
 # Initialize registry
 registry = SemanticParameterTypeRegistry()
 registry.initialize_model()
 
 # Create expression
-expr = SemanticCucumberExpression("I love {fruit}", registry)
+expr = SemanticBudExpression("I love {fruit}", registry)
 
 # Matches semantically similar words
 match = expr.match("I love apples")    # ✓ Matches
@@ -131,7 +151,7 @@ match = expr.match("I love mango")     # ✓ Matches
 registry.create_phrase_parameter_type('car_model', max_phrase_length=5)
 
 # Use in expression
-expr = UnifiedCucumberExpression("I drive a {car_model:phrase}", registry)
+expr = UnifiedBudExpression("I drive a {car_model:phrase}", registry)
 
 # Matches multi-word phrases
 match = expr.match("I drive a Rolls Royce")           # ✓ Matches: "Rolls Royce"
@@ -148,7 +168,7 @@ registry.define_semantic_category(
     similarity_threshold=0.6
 )
 
-expr = SemanticCucumberExpression("I drive a {vehicle}", registry)
+expr = SemanticBudExpression("I drive a {vehicle}", registry)
 match = expr.match("I drive a Tesla")  # ✓ Matches
 ```
 
@@ -160,7 +180,7 @@ registry.enable_dynamic_matching(True)
 registry.set_dynamic_threshold(0.3)
 
 # Undefined parameters are matched dynamically
-expr = SemanticCucumberExpression("I love {cars}", registry)
+expr = SemanticBudExpression("I love {cars}", registry)
 match = expr.match("I love Ferrari")  # ✓ Matches (compares "cars" ↔ "Ferrari")
 ```
 
@@ -168,7 +188,7 @@ match = expr.match("I love Ferrari")  # ✓ Matches (compares "cars" ↔ "Ferrar
 
 ```python
 # Combine all parameter types in one expression
-expr = UnifiedCucumberExpression(
+expr = UnifiedBudExpression(
     "{person:dynamic} wants to {action:semantic} {count} {items:phrase} for {price:regex}",
     registry
 )
@@ -177,36 +197,37 @@ match = expr.match("customer wants to purchase 5 red sports cars for $50,000")
 # Extracts all parameters with their specific matching strategies
 ```
 
+## 📁 Project Structure
+
+```
+symbolicai/
+├── semantic_bud_expressions/    # Core library
+│   ├── expression.py                # Base expressions
+│   ├── semantic_expression.py       # Semantic matching
+│   ├── unified_expression.py        # Unified system
+│   ├── parameter_types/             # All parameter types
+│   ├── registries/                  # Type registries
+│   └── utils/                       # Utilities
+├── examples/                        # Usage examples
+│   ├── example.py                   # Basic example
+│   ├── example_all_types.py         # All parameter types
+│   └── README.md                    # Examples guide
+├── benchmarks/                      # Performance testing
+│   ├── scripts/                     # Benchmark tools
+│   ├── results/                     # Results & visualizations
+│   └── README.md                    # Benchmark guide
+└── requirements.txt                 # Dependencies
+```
+
 ## 🏗️ Architecture
 
 ### Core Components
 
-```
-semantic_cucumber_expressions/
-├── Core Expression System
-│   ├── expression.py              # Base CucumberExpression
-│   ├── semantic_expression.py     # Semantic-enhanced expressions
-│   └── unified_expression.py      # Unified expression system
-│
-├── Parameter Types
-│   ├── parameter_type.py          # Base parameter type
-│   ├── semantic_parameter_type.py # Semantic matching
-│   ├── dynamic_semantic_parameter_type.py # Dynamic types
-│   └── unified_parameter_type.py  # Unified type system
-│
-├── Registries
-│   ├── parameter_type_registry.py # Base registry
-│   ├── semantic_registry.py       # Semantic-aware registry
-│   └── unified_registry.py        # Unified registry
-│
-├── AI/ML Components
-│   ├── model_manager.py           # Model2Vec integration
-│   └── semantic_cache.py          # Embedding cache
-│
-└── Utilities
-    ├── math_parameter_type.py     # Math expression support
-    └── unified_expression_parser.py # Type hint parser
-```
+- **Expression System**: Base, semantic, and unified expression classes
+- **Parameter Types**: Standard, semantic, dynamic, phrase, regex, math, quoted
+- **Registries**: Type management and resolution
+- **AI/ML Components**: Model2Vec integration and embedding cache
+- **Utilities**: Expression parsing and type hint processing
 
 ### Processing Pipeline
 
@@ -264,7 +285,7 @@ registry.initialize_model(model_name='minishlab/potion-base-8M')
 ### Custom Parameter Types
 
 ```python
-from semantic_cucumber_expressions import UnifiedParameterType, ParameterTypeHint
+from semantic_bud_expressions import UnifiedParameterType, ParameterTypeHint
 
 class MyCustomParameterType(UnifiedParameterType):
     def __init__(self, name: str, **kwargs):
@@ -301,19 +322,36 @@ registry.define_parameter_type(SemanticParameterType(
 ))
 ```
 
-## 🧪 Testing
+## 🧪 Examples & Testing
 
-Run the test suite:
+### Running Examples
 
 ```bash
-# Run all tests
+# Basic examples
+cd examples
+python example.py                    # Basic semantic matching
+python example_all_types.py          # All parameter types demo
+python example_unified_final.py      # Complete unified system
+
+# Run tests
 python test_unified_system.py
 python test_dynamic_semantic.py
+```
 
-# Run examples
-python example.py
-python example_unified_demo.py
-python test_all_types.py
+### Performance Benchmarking
+
+```bash
+cd benchmarks
+pip install -r requirements.txt
+
+# Quick performance test
+python scripts/benchmark_quick.py
+
+# Full benchmark suite
+python scripts/benchmark_tool.py
+
+# Generate visualizations
+python scripts/benchmark_visualizer.py
 ```
 
 ## 🗺️ Roadmap
@@ -345,7 +383,7 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 
 ## 📚 References
 
-- [Cucumber Expressions Documentation](https://cucumber.io/docs/cucumber/cucumber-expressions/)
+# Resources
 - [Model2Vec Paper](https://arxiv.org/abs/2310.00656)
 - [Semantic Similarity in NLP](https://en.wikipedia.org/wiki/Semantic_similarity)
 

@@ -4,20 +4,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Python library that extends `cucumber-expressions` with semantic matching capabilities using AI embeddings. It allows matching text based on meaning similarity rather than exact patterns, making it useful for more flexible BDD testing scenarios.
+This is a Python library that provides budExpressions with semantic matching capabilities using AI embeddings. It allows matching text based on meaning similarity rather than exact patterns, making it useful for more flexible BDD testing scenarios.
 
 ## Dependencies
 
 The project requires:
 - Python 3.12
-- cucumber-expressions
+- Python 3.12
 - numpy
 - sympy
 - model2vec (uses 'minishlab/potion-base-8M' model)
 
 Install dependencies:
 ```bash
-pip install cucumber-expressions numpy sympy model2vec
+pip install numpy sympy model2vec
 ```
 
 ## Running the Example
@@ -31,7 +31,7 @@ python example.py
 
 ### Core Components
 
-1. **SemanticCucumberExpression** (`semantic_expression.py`): Main class that extends CucumberExpression with semantic matching
+1. **SemanticBudExpression** (`semantic_expression.py`): Main class that extends budExpression with semantic matching
 2. **SemanticParameterTypeRegistry** (`semantic_registry.py`): Registry for semantic parameter types, manages the embedding model
 3. **ModelManager** (`model_manager.py`): Handles the Model2Vec embeddings model initialization and caching
 4. **SemanticParameterType** (`semantic_parameter_type.py`): Defines semantic categories with prototypes and similarity thresholds
@@ -48,20 +48,20 @@ python example.py
 ### Usage Pattern
 
 ```python
-from semantic_cucumber_expressions import SemanticCucumberExpression, SemanticParameterTypeRegistry
+from semantic_bud_expressions import SemanticBudExpression, SemanticParameterTypeRegistry
 
 # Initialize registry and model
 registry = SemanticParameterTypeRegistry()
 registry.initialize_model()
 
 # Create expression and match
-expr = SemanticCucumberExpression("I love {fruit}", registry)
+expr = SemanticBudExpression("I love {fruit}", registry)
 match = expr.match("I love grapes")
 ```
 
 ## Development Notes
 
-- The library inherits from the original cucumber-expressions library classes
+- The library provides its own implementation of budExpressions classes
 - Model initialization happens once per registry instance
 - Semantic matching uses cosine similarity with configurable thresholds
 - Math expressions are normalized using SymPy for consistent matching
@@ -79,7 +79,7 @@ The library now supports dynamic semantic matching, where undefined parameter ty
 
 ```python
 # If {cars} is not predefined, it dynamically matches based on similarity
-expr = SemanticCucumberExpression("I love {cars}", registry)
+expr = SemanticBudExpression("I love {cars}", registry)
 match = expr.match("I love Ferrari")  # Works! Compares "cars" ↔ "Ferrari"
 ```
 
@@ -109,7 +109,7 @@ The library now includes a unified expression system that supports multiple para
 
 ### Usage
 ```python
-from semantic_cucumber_expressions import UnifiedCucumberExpression, UnifiedParameterTypeRegistry
+from semantic_bud_expressions import UnifiedBudExpression, UnifiedParameterTypeRegistry
 
 # Initialize registry
 registry = UnifiedParameterTypeRegistry()
@@ -119,7 +119,7 @@ registry.initialize_model()
 registry.create_phrase_parameter_type('car_model', max_phrase_length=4)
 
 # Use with type hints
-expr = UnifiedCucumberExpression("I drive a {car_model:phrase}", registry)
+expr = UnifiedBudExpression("I drive a {car_model:phrase}", registry)
 match = expr.match("I drive a Rolls Royce")  # ✓ Matches multi-word phrases!
 ```
 
@@ -128,13 +128,13 @@ The unified system solves the multi-word phrase matching problem:
 
 ```python
 # Traditional: Limited to single words
-expr1 = SemanticCucumberExpression("I drive {car}", registry)
+expr1 = SemanticBudExpression("I drive {car}", registry)
 match1 = expr1.match("I drive Ferrari")  # ✓ Works
 match2 = expr1.match("I drive Rolls Royce")  # ✗ Fails
 
 # Unified: Supports multi-word phrases
 registry.create_phrase_parameter_type('vehicle', max_phrase_length=5)
-expr2 = UnifiedCucumberExpression("I drive {vehicle:phrase}", registry)
+expr2 = UnifiedBudExpression("I drive {vehicle:phrase}", registry)
 match3 = expr2.match("I drive Rolls Royce")  # ✓ Works!
 match4 = expr2.match("I drive Mercedes Benz S Class")  # ✓ Works!
 ```
@@ -142,7 +142,7 @@ match4 = expr2.match("I drive Mercedes Benz S Class")  # ✓ Works!
 ### Mixed Parameter Types
 ```python
 # Mix different parameter types in one expression
-expr = UnifiedCucumberExpression(
+expr = UnifiedBudExpression(
     "I {action:semantic} {count} {items:phrase}",
     registry
 )
