@@ -92,19 +92,11 @@ class UnifiedBudExpression(budExpression):
             if existing_type:
                 return None  # Use existing type
             else:
-                # Create a dynamic type if dynamic matching is enabled
-                if hasattr(self.parameter_type_registry, '_dynamic_matching_enabled') and \
-                   self.parameter_type_registry._dynamic_matching_enabled:
-                    return UnifiedParameterType(
-                        name=param_name,
-                        type_hint=ParameterTypeHint.DYNAMIC,
-                        similarity_threshold=getattr(self.parameter_type_registry, '_dynamic_threshold', 0.3)
-                    )
-                else:
-                    return UnifiedParameterType(
-                        name=param_name,
-                        type_hint=ParameterTypeHint.STANDARD
-                    )
+                # Always create a STANDARD type, not DYNAMIC
+                return UnifiedParameterType(
+                    name=param_name,
+                    type_hint=ParameterTypeHint.STANDARD
+                )
         
         elif type_hint == ParameterTypeHint.SEMANTIC:
             # Look for existing semantic parameter type
