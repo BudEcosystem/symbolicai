@@ -3,6 +3,10 @@
 Test example showing all parameter types working together
 """
 
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from semantic_bud_expressions import (
     UnifiedBudExpression,
     UnifiedParameterTypeRegistry
