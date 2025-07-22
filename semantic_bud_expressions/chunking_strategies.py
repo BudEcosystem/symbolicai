@@ -20,6 +20,14 @@ class TextChunk:
         self.similarity_score = 0.0
         self.contains_pattern = False
     
+    def strip(self):
+        """Return stripped text content"""
+        return self.text.strip()
+    
+    def __str__(self):
+        """Return text content as string"""
+        return self.text
+    
     def __repr__(self):
         return f"TextChunk(text='{self.text[:30]}...', type={self.chunk_type}, similarity={self.similarity_score:.3f})"
 
