@@ -24,6 +24,12 @@ from .faiss_phrase_matcher import FAISSPhraseMatcher, PhraseCandidate, FAISSPhra
 from .enhanced_unified_parameter_type import EnhancedUnifiedParameterType
 from .enhanced_unified_registry import EnhancedUnifiedParameterTypeRegistry
 
+# Context-aware training system
+from .context_aware_trainer import ContextAwareTrainer, TrainingConfig, TrainedParameters
+from .trained_context_expression import TrainedContextAwareExpression, TrainedContextMatch
+from .chunking_strategies import ChunkingProcessor, NaiveBayesChunkCombiner, ChunkedContextMatcher, TextChunk
+from .adaptive_context_matcher import AdaptiveContextMatcher, ContextNormalizationConfig, PerspectiveNormalizer, SemanticExpander
+
 # Also export original classes for compatibility
 from .expression import budExpression
 from .parameter_type import ParameterType
@@ -63,6 +69,21 @@ __all__ = [
     'FAISSPhraseIndex',
     'EnhancedUnifiedParameterType',
     'EnhancedUnifiedParameterTypeRegistry',
+    
+    # Context-aware training components
+    'ContextAwareTrainer',
+    'TrainingConfig', 
+    'TrainedParameters',
+    'TrainedContextAwareExpression',
+    'TrainedContextMatch',
+    'ChunkingProcessor',
+    'NaiveBayesChunkCombiner',
+    'ChunkedContextMatcher',
+    'TextChunk',
+    'AdaptiveContextMatcher',
+    'ContextNormalizationConfig',
+    'PerspectiveNormalizer',
+    'SemanticExpander',
     
     # Original bud expressions
     'budExpression',
