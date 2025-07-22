@@ -328,6 +328,96 @@ match = expr.match("customer wants to purchase 5 red sports cars for $50,000")
 # Extracts all parameters with their specific matching strategies
 ```
 
+### Cucumber-Style Exact Matching (No Semantic)
+
+For traditional Cucumber/BDD-style exact matching without semantic understanding:
+
+```python
+from semantic_bud_expressions import ParameterType, ParameterTypeRegistry, budExpression
+
+# Create registry for exact matching
+registry = ParameterTypeRegistry()
+
+# Define exact list of allowed values - NO semantic matching
+fruit_type = ParameterType(
+    name="fruit",
+    regexp="apple|banana|orange|grape|mango",  # ONLY these exact values match
+    type=str
+)
+registry.define_parameter_type(fruit_type)
+
+# Create expression
+expr = budExpression("I love {fruit}", registry)
+
+# Only exact matches work
+match = expr.match("I love apple")      # ✓ Matches
+match = expr.match("I love strawberry")  # ✗ NO match (not in predefined list)
+match = expr.match("I love apples")      # ✗ NO match (plural not in list)
+```
+
+#### Case-Insensitive Exact Matching
+
+```python
+# Include case variations for case-insensitive matching
+fruits = ["apple", "banana", "orange"]
+fruits_with_cases = []
+for fruit in fruits:
+    fruits_with_cases.extend([fruit, fruit.upper(), fruit.capitalize()])
+
+fruit_type = ParameterType(
+    name="fruit",
+    regexp="|".join(fruits_with_cases),
+    type=str,
+    transformer=lambda x: x.lower()  # Normalize output
+)
+
+expr = budExpression("I love {fruit}", registry)
+match = expr.match("I love APPLE")  # ✓ Matches and returns "apple"
+```
+
+#### Multi-Word Exact Matching
+
+```python
+import re
+
+# Define exact car models
+car_models = ["Tesla Model 3", "BMW X5", "Mercedes S Class"]
+escaped_models = [re.escape(model) for model in car_models]
+
+car_type = ParameterType(
+    name="car",
+    regexp="|".join(escaped_models),
+    type=str
+)
+registry.define_parameter_type(car_type)
+
+expr = budExpression("I drive a {car}", registry)
+match = expr.match("I drive a Tesla Model 3")  # ✓ Exact match
+match = expr.match("I drive a Tesla Model S")  # ✗ NO match (different model)
+```
+
+#### When to Use Each Approach
+
+| Use Case | Cucumber-Style (Exact) | Semantic Matching |
+|----------|----------------------|-------------------|
+| Strict validation | ✓ Best choice | Use with high threshold |
+| Predefined vocabularies | ✓ Perfect fit | Also works |
+| Natural language input | Limited | ✓ Best choice |
+| Typo tolerance | ✗ No support | ✓ Handles variations |
+| New terms without code changes | ✗ Must update list | ✓ Works automatically |
+
+**Choose Cucumber-style when:**
+- You need strict control over allowed values
+- Working with enums or fixed vocabularies
+- Traditional BDD/testing scenarios
+- No AI/ML dependencies desired
+
+**Choose Semantic matching when:**
+- Handling natural language input
+- Need flexibility for variations
+- Want typo tolerance
+- Building user-friendly interfaces
+
 ## 📁 Project Structure
 
 ```
